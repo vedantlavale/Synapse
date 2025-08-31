@@ -5,10 +5,11 @@ const prisma = new PrismaClient();
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { sharelink: string } }
+  { params }: { params: Promise<{ sharelink: string }> }
 ) {
   try {
-    const hash = params.sharelink; // get the hash from the params
+    const { sharelink } = await params;
+    const hash = sharelink; // get the hash from the params
 
     // Check if the hash exists in the Link table
     const link = await prisma.link.findFirst({
