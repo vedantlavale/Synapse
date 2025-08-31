@@ -1,47 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  // Define protected routes
-  const protectedRoutes = ["/dashboard", "/profile"];
-  const authRoutes = ["/login", "/signup"];
-  
   const { pathname } = request.nextUrl;
   
-  try {
-    // Get session from the request
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
-
-    // If user is authenticated and trying to access auth routes, redirect to dashboard
-    if (session && authRoutes.some(route => pathname.startsWith(route))) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
-    // If user is not authenticated and trying to access protected routes, redirect to signin
-    if (!session && protectedRoutes.some(route => pathname.startsWith(route))) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    return NextResponse.next();
-  } catch (error) {
-    // If there's an error checking the session, continue to the route
-    // This prevents the app from breaking if auth service is down
-    console.error("Middleware auth check failed:", error);
-    return NextResponse.next();
+  // Check for Better Auth session cookie directly
+  // Better Auth typically uses this cookie name, but let's also check variations
+  const sessionToken = request.cookies.get("better-auth.session_token") || 
+                      request.cookies.get("session_token") ||
+                      request.cookies.get("auth.session_token");
+  
+  if (sessionToken && ["/login", "/signup"].includes(pathname)) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
+  
+  if (!sessionToken && pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (auth routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/dashboard", "/login", "/signup"],
 };
+
+// Force middleware to run in Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs';
