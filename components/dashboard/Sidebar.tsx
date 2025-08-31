@@ -52,13 +52,14 @@ export default function Sidebar({
 
       {/* Sidebar */}
       <div
-        className={`${sidebarOpen ? "w-64" : "w-16"} ${
+        className={`${sidebarOpen ? "w-64 lg:w-72 xl:w-80" : "w-16"} ${
           isMobile
             ? `fixed left-0 top-0 h-full z-50 transform transition-transform duration-300 ${
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
               }`
             : "relative"
-        } bg-muted border-r transition-all duration-300 flex flex-col h-full`}
+        } border-r transition-all duration-300 flex flex-col h-full`}
+        style={{ backgroundColor: '#7a83ff' }}
       >
         {/* Header */}
         <div className="p-4 border-b">
@@ -66,7 +67,7 @@ export default function Sidebar({
             <Button
               variant="neutral"
               size="sm"
-              className="bg-[#ffbf00]"
+              className="bg-white text-black hover:bg-gray-100"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
               {isMobile && sidebarOpen ? (
@@ -75,7 +76,7 @@ export default function Sidebar({
                 <Menu className="h-4 w-4" />
               )}
             </Button>
-            {sidebarOpen && <h2 className="font-semibold">My Brain</h2>}
+            {sidebarOpen && <h2 className="font-semibold text-sm sm:text-base">Synapse</h2>}
           </div>
         </div>
 
@@ -102,7 +103,7 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("all")}
               className={`w-full ${
-                selectedFilter === "all" ? "bg-[#ffbf00]" : "bg-[#ffd966] hover:bg-[#ffbf00]"
+                selectedFilter === "all" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
               } ${
                 sidebarOpen ? "justify-between" : "justify-center"
               }`}
@@ -121,7 +122,7 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("youtube")}
               className={`w-full ${
-                selectedFilter === "youtube" ? "bg-[#ffbf00]" : "bg-[#ffd966] hover:bg-[#ffbf00]"
+                selectedFilter === "youtube" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
               } ${
                 sidebarOpen ? "justify-between" : "justify-center"
               }`}
@@ -140,7 +141,7 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("twitter")}
               className={`w-full ${
-                selectedFilter === "twitter" ? "bg-[#ffbf00]" : "bg-[#ffd966] hover:bg-[#ffbf00]"
+                selectedFilter === "twitter" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
               } ${
                 sidebarOpen ? "justify-between" : "justify-center"
               }`}
@@ -159,7 +160,7 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("url")}
               className={`w-full ${
-                selectedFilter === "url" ? "bg-[#ffbf00]" : "bg-[#ffd966] hover:bg-[#ffbf00]"
+                selectedFilter === "url" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
               } ${
                 sidebarOpen ? "justify-between" : "justify-center"
               }`}
@@ -182,7 +183,7 @@ export default function Sidebar({
           <div className="space-y-2">
             <Button
               variant="neutral"
-              className={`w-full bg-[#ffbf00] ${
+              className={`w-full bg-white text-black hover:bg-gray-100 ${
                 sidebarOpen ? "justify-start" : "justify-center"
               }`}
             >
@@ -193,7 +194,7 @@ export default function Sidebar({
               <DrawerTrigger asChild>
                 <Button
                   variant="neutral"
-                  className={`w-full bg-[#ffbf00] ${
+                  className={`w-full bg-white text-black hover:bg-gray-100 ${
                     sidebarOpen ? "justify-start" : "justify-center"
                   }`}
                 >

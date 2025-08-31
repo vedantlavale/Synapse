@@ -33,6 +33,7 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          
         },
       });
 
@@ -75,26 +76,30 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button
+          className="gap-2 bg-white text-black hover:bg-gray-100"
+        >
           <Share className="h-4 w-4" />
-          Share Brain
+          Share
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Share Your Brain</DialogTitle>
+          <DialogTitle>Share Your Content</DialogTitle>
           <DialogDescription>
-            Create a public link to share your brain content with others. Anyone with the link will be able to view your content.
+            Create a public link to share your content with others. Anyone
+            with the link will be able to view your content.
           </DialogDescription>
         </DialogHeader>
-        
+
         {!shareLink ? (
           <div className="space-y-4">
             <div className="text-sm text-muted-foreground">
-              Click the button below to generate a shareable link for your brain.
+              Click the button below to generate a shareable link for your
+              content.
             </div>
-            <Button 
-              onClick={handleCreateShare} 
+            <Button
+              onClick={handleCreateShare}
               disabled={loading}
               className="w-full"
             >
@@ -122,11 +127,7 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
                   readOnly
                   className="flex-1"
                 />
-                <Button 
-                  size="sm" 
-                  onClick={handleCopyLink}
-                  className="shrink-0"
-                >
+                <Button size="sm" onClick={handleCopyLink} className="shrink-0">
                   {copied ? (
                     <Check className="h-4 w-4" />
                   ) : (
@@ -136,13 +137,13 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
               </div>
             </div>
             <div className="text-sm text-muted-foreground">
-              This link allows anyone to view your brain content. Keep it safe!
+              This link allows anyone to view your content. Keep it safe!
             </div>
           </div>
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button variant="neutral" onClick={handleClose}>
             {shareLink ? "Close" : "Cancel"}
           </Button>
         </DialogFooter>

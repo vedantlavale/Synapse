@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Brainly Next",
+  title: "Synapse",
   description: "A Next.js app with better-auth authentication",
 };
 

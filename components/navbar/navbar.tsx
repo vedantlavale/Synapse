@@ -14,8 +14,12 @@ function Navbar({ onContentAdded }: NavbarProps) {
 
   return (
     <>
-      <div className="w-full flex justify-end p-4 gap-4 px-4 ">
-        <Button onClick={() => setIsDialogOpen(true)}>
+
+      <div className="flex justify-end gap-2 sm:gap-4 p-2 sm:p-4">
+        <Button 
+          onClick={() => setIsDialogOpen(true)}
+          className="bg-white text-black hover:bg-gray-100 text-xs sm:text-sm"
+        >
           <PlusIcon />
           Add Content
         </Button>

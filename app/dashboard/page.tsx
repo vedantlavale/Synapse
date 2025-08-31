@@ -10,6 +10,9 @@ import { authClient } from "@/lib/auth-client";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { useResponsive } from "@/hooks/use-responsive";
 
+
+
+
 export default function Page() {
   const router = useRouter();
   const { sidebarOpen, setSidebarOpen, isMobile } = useResponsive();
@@ -36,7 +39,20 @@ export default function Page() {
   };
 
   return (
-    <div className="h-screen bg-background flex relative overflow-hidden">
+    <div className="min-h-screen w-full bg-white relative">
+      {/* Grid Background */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+            linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+          `,
+          backgroundSize: "40px 40px",
+        }}
+      />
+      {/* Your Content/Components */}
+      <div className="h-screen bg-transparent flex relative overflow-hidden z-10">
       <Sidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -56,21 +72,21 @@ export default function Page() {
         }`}
       >
         {/* Header */}
-        <header className="h-16 bg-background border-b flex items-center justify-between px-4 flex-shrink-0">
-          <div className="flex items-center gap-4">
+        <header className="h-17 sm:h-17 md:h-17 border-b flex items-center justify-between pl-0 pr-2 sm:pr-4 flex-shrink-0" style={{ backgroundColor: '#7a83ff' }}>
+          <div className="flex items-center gap-2 sm:gap-4 pl-2 sm:pl-4">
             {isMobile && (
               <Button
                 variant="neutral"
                 size="sm"
-                className="bg-[#ffbf00] md:hidden"
+                className="md:hidden bg-white text-black hover:bg-gray-100"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
                 <Menu className="h-4 w-4" />
               </Button>
             )}
-            <h1 className="text-xl md:text-2xl font-bold">My Brain App</h1>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate">Synapse</h1>
             {searchQuery && (
-              <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+              <span className="hidden sm:inline-block text-xs sm:text-sm text-white bg-white/20 px-2 py-1 rounded">
                 {filteredContents.length} result{filteredContents.length !== 1 ? 's' : ''} for "{searchQuery}"
               </span>
             )}
@@ -81,7 +97,7 @@ export default function Page() {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-2 md:p-4">
+        <main className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6">
           <ContentGrid
             loading={loading}
             filteredContents={filteredContents}
@@ -95,10 +111,13 @@ export default function Page() {
         </main>
 
         {/* Mobile Navbar */}
-        <div className="sm:hidden bg-background border-t p-2 flex-shrink-0">
-          <Navbar onContentAdded={fetchContent} />
+        <div className="sm:hidden border-t flex-shrink-0" style={{ backgroundColor: '#7a83ff' }}>
+          <div className="p-2">
+            <Navbar onContentAdded={fetchContent} />
+          </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 interface AddContentDialogProps {
   open: boolean;
@@ -62,7 +63,7 @@ export default function AddContentDialog({
       const session = await authClient.getSession();
       
       if (!session) {
-        alert("Please log in to add content");
+        toast.error("Please log in to add content");
         return;
       }
 
@@ -87,14 +88,14 @@ export default function AddContentDialog({
         onOpenChange(false);
         // Trigger refresh of content list
         onContentAdded?.();
-        alert("Content added successfully!");
+        toast.success("Content added successfully!");
       } else {
         const error = await response.json();
-        alert(`Error: ${error.error || "Failed to add content"}`);
+        toast.error(`Error: ${error.error || "Failed to add content"}`);
       }
     } catch (error) {
       console.error("Error adding content:", error);
-      alert("Failed to add content. Please try again.");
+      toast.error("Failed to add content. Please try again.");
     } finally {
       setIsLoading(false);
     }
