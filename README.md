@@ -216,6 +216,34 @@ The application uses the following main models:
 - **Link**: Shareable links for content collections
 - **Account/Session**: Authentication-related models (managed by better-auth)
 
+## Deployment
+
+### Environment Variables for Production
+
+When deploying to Vercel or other platforms, make sure to set these environment variables:
+
+```bash
+DATABASE_URL="postgresql://username:password@host:5432/database"
+BETTER_AUTH_SECRET="your-long-random-secret-key"
+BETTER_AUTH_URL="https://yourdomain.com"
+```
+
+### Vercel Deployment
+
+1. Connect your repository to Vercel
+2. Set the environment variables in your Vercel dashboard
+3. Deploy - the build process will automatically:
+   - Generate the Prisma client
+   - Build the Next.js application
+   - Deploy your application
+
+### Build Process
+
+The project is configured with:
+- `postinstall` script that generates Prisma client
+- Build script that ensures Prisma client generation before Next.js build
+- Optimized for serverless deployment
+
 ## Contributing
 
 1. Fork the repository
