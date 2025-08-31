@@ -168,7 +168,7 @@ export default function ShareBrainDialog({ open, onOpenChange }: ShareBrainDialo
                   </Button>
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="neutral"
                     onClick={handleOpenLink}
                     className="shrink-0"
                   >
@@ -185,7 +185,7 @@ export default function ShareBrainDialog({ open, onOpenChange }: ShareBrainDialo
                   </span>
                 </div>
                 <Button
-                  variant="destructive"
+                  variant="reverse"
                   size="sm"
                   onClick={handleRemoveShare}
                   disabled={isLoading}
@@ -218,7 +218,7 @@ export default function ShareBrainDialog({ open, onOpenChange }: ShareBrainDialo
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="neutral" onClick={() => onOpenChange(false)}>
             Close
           </Button>
         </DialogFooter>
