@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -7,6 +6,7 @@
 /* Tagesschrift font specifically for Synapse branding */
 .font-synapse {
   font-family: 'Tagesschrift', var(--font-geist-sans), serif;
+  font-display: swap;
 }
 
 /* Neobrutalism Global Styles */
