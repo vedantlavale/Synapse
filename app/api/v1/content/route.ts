@@ -1,0 +1,147 @@
+import { auth } from "@/lib/auth";
+import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
+const prisma = new PrismaClient();
+
+export async function GET(req: NextRequest) {
+  try {
+    // Get session using better-auth (equivalent to userMiddleware)
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+    if (!session) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+
+    // Fetch content for the user with user details (equivalent to populate)
+    const content = await prisma.content.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        user: {
+          select: {
+            name: true, // Using 'name' field as it's the closest to 'username' in your schema
+            email: true, // You can include email if needed
+          },
+        },
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      content,
+    });
+  } catch (error) {
+    console.error("Content fetch error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch content" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    console.log("=== POST /api/v1/content ===");
+    console.log("Headers:", Object.fromEntries(req.headers.entries()));
+    console.log("Cookies:", req.cookies.getAll());
+    console.log("Authorization header:", req.headers.get('authorization'));
+    console.log("Cookie header:", req.headers.get('cookie'));
+    
+    // Get session using better-auth (equivalent to userMiddleware)
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    console.log("Session result:", session);
+
+    if (!session) {
+      console.error("Authentication failed: No session found");
+      console.log("Available headers for debugging:", {
+        authorization: req.headers.get('authorization'),
+        cookie: req.headers.get('cookie'),
+        'x-session-token': req.headers.get('x-session-token'),
+        'x-auth-token': req.headers.get('x-auth-token'),
+      });
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    
+    const link = body.link;
+    const type = body.type;
+    const description = body.description;
+    const title = body.title;
+
+    const content = await prisma.content.create({
+      data: {
+        title,
+        link,
+        type,
+        description,
+        userId: session.user.id,
+        // tags: [], // Note: In Prisma, we don't need to explicitly set empty relations
+      },
+    });
+
+    return NextResponse.json({ message: "Content Added" });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function DELETE(req: NextRequest) {
+  try {
+    // Get session using better-auth (equivalent to userMiddleware)
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+
+    // Get content ID from request
+    //@ts-ignore
+    const { id } = req.query;
+
+    // Delete content for the user
+    await prisma.content.deleteMany({
+      where: {
+        id: id,
+        userId: userId,
+      },
+    });
+
+    return NextResponse.json({ message: "Content Deleted" });
+  } catch (error) {
+    console.error("Content delete error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete content" },
+      { status: 500 }
+    );
+  }
+}
