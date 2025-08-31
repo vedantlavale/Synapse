@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Menu,
@@ -12,6 +13,9 @@ import {
   Star,
   Github,
   X,
+  Youtube,
+  Twitter,
+  Globe,
 } from "lucide-react";
 import Navbar from "@/components/navbar/navbar";
 import ContentCard from "@/components/content-card";
@@ -31,18 +35,20 @@ interface Content {
 }
 
 
-function logoutOnClick(){
-  // Handle the actual logout logic
-  try {
-    authClient.signOut();
-    // Redirect to login page
-    window.location.href = '/login';
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
-}
-
 export default function Page() {
+  const router = useRouter();
+
+  const logoutOnClick = () => {
+    // Handle the actual logout logic
+    try {
+      authClient.signOut();
+      // Use Next.js router for proper navigation
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [contents, setContents] = useState<Content[]>([]);
@@ -172,8 +178,8 @@ export default function Page() {
                 sidebarOpen ? "justify-start" : "justify-center"
               }`}
             >
-              <User className="h-4 w-4" />
-              {sidebarOpen && <span className="ml-2">Profile</span>}
+              <Youtube className="h-4 w-4" />
+              {sidebarOpen && <span className="ml-2">YouTube</span>}
             </Button>
             <Button
               variant="neutral"
@@ -181,8 +187,17 @@ export default function Page() {
                 sidebarOpen ? "justify-start" : "justify-center"
               }`}
             >
-              <Settings className="h-4 w-4" />
-              {sidebarOpen && <span className="ml-2">Settings</span>}
+              <Twitter className="h-4 w-4" />
+              {sidebarOpen && <span className="ml-2">Twitter</span>}
+            </Button>
+            <Button
+              variant="neutral"
+              className={`w-full bg-[#ffbf00] ${
+                sidebarOpen ? "justify-start" : "justify-center"
+              }`}
+            >
+              <Globe className="h-4 w-4" />
+              {sidebarOpen && <span className="ml-2">URL</span>}
             </Button>
           </div>
         </nav>
