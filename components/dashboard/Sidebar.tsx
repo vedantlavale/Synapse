@@ -194,7 +194,8 @@ export default function Sidebar({
             </Button>
             <Button
               variant="neutral"
-              className={`w-full bg-white text-black hover:bg-gray-100 ${
+              onClick={() => window.open('https://github.com/vedantlavale/Synapse', '_blank')}
+              className={`w-full  bg-white text-black hover:bg-gray-100 ${
                 sidebarOpen ? "justify-start" : "justify-center"
               }`}
             >
