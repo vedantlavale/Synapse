@@ -1,12 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
-/* Tagesschrift font for Synapse branding */
+/* Fredoka font for Synapse branding - modern, friendly, and distinctive */
 .font-synapse {
-  font-family: 'Tagesschrift', var(--font-tagesschrift), cursive;
+  font-family: var(--font-synapse), var(--font-geist-sans), sans-serif;
 }
 
 /* Neobrutalism Global Styles */
