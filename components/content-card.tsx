@@ -29,6 +29,7 @@ interface Content {
 interface ContentCardProps {
   content: Content;
   onDelete?: (id: string) => void;
+  showDelete?: boolean;
 }
 
 function getYoutubeEmbedUrl(url: string): string {
@@ -87,7 +88,7 @@ function getTwitterEmbedUrl(url: string): string {
   return `https://publish.twitter.com/oembed?url=${encodeURIComponent(url)}`;
 }
 
-export default function ContentCard({ content, onDelete }: ContentCardProps) {
+export default function ContentCard({ content, onDelete, showDelete = true }: ContentCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -187,36 +188,38 @@ export default function ContentCard({ content, onDelete }: ContentCardProps) {
             )}
           </div>
           <CardAction>
-            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="neutral"
-                  size="sm"
-                  disabled={isDeleting}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Content</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete "{content.title}"? This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
+            {showDelete && onDelete && (
+              <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="neutral"
+                    size="sm"
                     disabled={isDeleting}
-                    className="bg-red-600 hover:bg-red-700 text-white"
+                    className="text-red-500 hover:text-red-700"
                   >
-                    {isDeleting ? "Deleting..." : "Delete"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Content</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete "{content.title}"? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      {isDeleting ? "Deleting..." : "Delete"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </CardAction>
         </div>
       </CardHeader>

@@ -1,8 +1,9 @@
 "use client"
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { PlusIcon, Send } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import AddContentDialog from "@/components/dialogue/Dialogue";
+import ShareBrainDialog from "@/components/dashboard/ShareBrainDialog";
 
 interface NavbarProps {
   onContentAdded?: () => void;
@@ -19,10 +20,7 @@ function Navbar({ onContentAdded }: NavbarProps) {
           Add Content
         </Button>
 
-        <Button>
-          <Send />
-          Share Brain
-        </Button>
+        <ShareBrainDialog onShareCreated={onContentAdded} />
       </div>
 
       <AddContentDialog 
