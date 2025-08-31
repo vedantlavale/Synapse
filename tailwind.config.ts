@@ -19,6 +19,7 @@ const config: Config = {
       },
       fontFamily: {
         'brutal': ['Inter', 'sans-serif'],
+        'synapse': ['Tagesschrift', 'var(--font-tagesschrift)', 'cursive'],
       },
       boxShadow: {
         'brutal': '8px 8px 0px 0px #000',

@@ -51,7 +51,7 @@ export default function SignupPage() {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black mb-3 sm:mb-4 transform rotate-2">
             JOIN
           </h1>
-          <h2 className="text-3xl sm:text-4xl font-black text-black mb-3 sm:mb-4 transform -rotate-1">
+          <h2 className="text-3xl sm:text-4xl font-black text-black mb-3 sm:mb-4 transform -rotate-1 font-synapse">
             SYNAPSE
           </h2>
           <p className="text-lg sm:text-xl font-bold text-black">

@@ -13,6 +13,7 @@ import {
   Github,
   LogOut,
   X,
+  Coffee,
 } from "lucide-react";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { ContentCounts, FilterType } from "@/types/content";
@@ -76,7 +77,7 @@ export default function Sidebar({
                 <Menu className="h-4 w-4" />
               )}
             </Button>
-            {sidebarOpen && <h2 className="font-semibold text-sm sm:text-base">Synapse</h2>}
+            {sidebarOpen && <h2 className="font-semibold text-sm sm:text-base font-synapse">Synapse</h2>}
           </div>
         </div>
 
@@ -181,6 +182,16 @@ export default function Sidebar({
         {/* Sidebar Footer */}
         <div className="p-4 border-t">
           <div className="space-y-2">
+            <Button
+              variant="neutral"
+              className={`w-full bg-yellow-400 text-black hover:bg-yellow-500 ${
+                sidebarOpen ? "justify-start" : "justify-center"
+              }`}
+              onClick={() => window.open('https://buymeacoffee.com/0xVedant', '_blank')}
+            >
+              <Coffee className="h-4 w-4" />
+              {sidebarOpen && <span className="ml-2">Buy me a coffee</span>}
+            </Button>
             <Button
               variant="neutral"
               className={`w-full bg-white text-black hover:bg-gray-100 ${

@@ -46,7 +46,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-sm sm:max-w-md lg:max-w-lg">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black mb-3 sm:mb-4 transform -rotate-2">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black mb-3 sm:mb-4 transform -rotate-2 font-synapse">
             SYNAPSE
           </h1>
           <p className="text-lg sm:text-xl font-bold text-black">

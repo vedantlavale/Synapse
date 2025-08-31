@@ -14,7 +14,7 @@ export default function Home() {
 
       <div className="relative z-10 text-center max-w-4xl mx-auto w-full">
         {/* Main Title */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-black mb-6 sm:mb-8 transform -rotate-2">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-black mb-6 sm:mb-8 transform -rotate-2 font-synapse">
           SYNAPSE
         </h1>
         
@@ -25,7 +25,7 @@ export default function Home() {
           </h2>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-black max-w-2xl mx-auto leading-relaxed">
             Store, organize, and share your knowledge with the world. 
-            Build your knowledge network with Synapse.
+            Build your knowledge network with <span className="font-synapse">Synapse</span>.
           </p>
         </div>
 
