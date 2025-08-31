@@ -86,7 +86,7 @@ export default function SharedBrainPage() {
             <Share className="h-6 w-6 text-muted-foreground" />
             <div>
               <h1 className="text-2xl font-bold">
-                {brainOwner}'s Brain
+                {brainOwner}&rsquo;s Brain
               </h1>
               <p className="text-sm text-muted-foreground">
                 Shared brain content • {contents.length} item{contents.length !== 1 ? 's' : ''}
@@ -114,7 +114,7 @@ export default function SharedBrainPage() {
             <Share className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">No Content</h2>
             <p className="text-muted-foreground">
-              This brain doesn't have any content to share yet.
+              This brain doesn&rsquo;t have any content to share yet.
             </p>
           </div>
         )}

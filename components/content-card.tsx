@@ -57,58 +57,9 @@ function getYoutubeEmbedUrl(url: string): string {
   return "";
 }
 
-function getYoutubeThumbnail(url: string): string {
-  console.log("Processing YouTube URL:", url);
-  
-  // More comprehensive YouTube URL patterns
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=)([^&\n?#]+)/,
-    /(?:youtu\.be\/)([^&\n?#]+)/,
-    /(?:youtube\.com\/embed\/)([^&\n?#]+)/,
-    /(?:youtube\.com\/v\/)([^&\n?#]+)/,
-    /(?:youtube\.com\/.*[?&]v=)([^&\n?#]+)/
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) {
-      const videoId = match[1];
-      console.log("Extracted video ID:", videoId);
-      // Try different thumbnail qualities
-      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    }
-  }
-  
-  console.log("No video ID found for URL:", url);
-  return "";
-}
-
-function getTwitterEmbedUrl(url: string): string {
-  // For Twitter/X posts, we'll use the oEmbed endpoint
-  return `https://publish.twitter.com/oembed?url=${encodeURIComponent(url)}`;
-}
-
 export default function ContentCard({ content, onDelete, showDelete = true }: ContentCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  const getVideoIdFromUrl = (url: string): string => {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=)([^&\n?#]+)/,
-      /(?:youtu\.be\/)([^&\n?#]+)/,
-      /(?:youtube\.com\/embed\/)([^&\n?#]+)/,
-      /(?:youtube\.com\/v\/)([^&\n?#]+)/,
-      /(?:youtube\.com\/.*[?&]v=)([^&\n?#]+)/
-    ];
-
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    return "";
-  };
 
   const handleDelete = async () => {
     if (!onDelete) return;
@@ -204,7 +155,7 @@ export default function ContentCard({ content, onDelete, showDelete = true }: Co
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete Content</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to delete "{content.title}"? This action cannot be undone.
+                      Are you sure you want to delete &ldquo;{content.title}&rdquo;? This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

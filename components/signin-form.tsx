@@ -21,8 +21,9 @@ export default function SignInForm() {
       });
       // Redirect or handle success
       window.location.href = "/dashboard"; // or use Next.js router
-    } catch (err: any) {
-      setError(err.message || "Sign in failed");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Sign in failed";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

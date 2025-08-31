@@ -23,8 +23,9 @@ export default function SignUpForm() {
       });
       // Redirect or handle success
       window.location.href = "/dashboard"; // or use Next.js router
-    } catch (err: any) {
-      setError(err.message || "Sign up failed");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Sign up failed";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

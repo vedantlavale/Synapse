@@ -87,7 +87,7 @@ export default function Page() {
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate font-synapse">Synapse</h1>
             {searchQuery && (
               <span className="hidden sm:inline-block text-xs sm:text-sm text-white bg-white/20 px-2 py-1 rounded">
-                {filteredContents.length} result{filteredContents.length !== 1 ? 's' : ''} for "{searchQuery}"
+                {filteredContents.length} result{filteredContents.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
               </span>
             )}
           </div>

@@ -25,8 +25,9 @@ export default function LoginPage() {
       if (result.data) {
         router.push('/dashboard');
       }
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +108,7 @@ export default function LoginPage() {
           {/* Signup Link */}
           <div className="mt-4 sm:mt-6 text-center">
             <p className="text-black font-bold text-sm sm:text-base">
-              DON'T HAVE AN ACCOUNT?{' '}
+              DON&rsquo;T HAVE AN ACCOUNT?{' '}
               <a
                 href="/signup"
                 className="underline decoration-3 sm:decoration-4 underline-offset-4 hover:decoration-6 sm:hover:decoration-8 transition-all"

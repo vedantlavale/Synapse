@@ -2,6 +2,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardAction }
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Play, Twitter, Globe, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface Content {
   id: string;
@@ -44,11 +45,6 @@ function getYoutubeThumbnail(url: string): string {
   
   console.log("No video ID found for URL:", url);
   return "";
-}
-
-function getTwitterEmbedUrl(url: string): string {
-  // For Twitter/X posts, we'll use the oEmbed endpoint
-  return `https://publish.twitter.com/oembed?url=${encodeURIComponent(url)}`;
 }
 
 export default function ContentCard({ content, onDelete }: ContentCardProps) {
@@ -118,9 +114,11 @@ export default function ContentCard({ content, onDelete }: ContentCardProps) {
       if (thumbnailUrl && !imageError) {
         return (
           <div className="relative">
-            <img
+            <Image
               src={thumbnailUrl}
               alt={content.title}
+              width={400}
+              height={192}
               className="w-full h-48 object-cover rounded-lg"
               onError={handleThumbnailError}
               onLoad={() => console.log("Thumbnail loaded successfully:", thumbnailUrl)}

@@ -69,7 +69,7 @@ export async function GET(
       username: user.name || user.email, // Use name if available, otherwise email
       content,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Share link error:", error);
     return NextResponse.json(
       { error: "Failed to fetch shared content" },

@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
     const description = body.description;
     const title = body.title;
 
-    const content = await prisma.content.create({
+    await prisma.content.create({
       data: {
         title,
         link,
@@ -99,9 +99,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ message: "Content Added" });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }

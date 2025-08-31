@@ -31,7 +31,7 @@ export default function ContentGrid({
         <div className="text-center py-8 sm:py-12 px-4">
           <p className="text-gray-500 text-base sm:text-lg mb-4">No content added yet</p>
           <p className="text-gray-400 text-sm sm:text-base">
-            Click "Add Content" to get started!
+            Click &ldquo;Add Content&rdquo; to get started!
           </p>
         </div>
       );

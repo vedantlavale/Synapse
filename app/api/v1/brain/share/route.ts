@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         const hash = generateRandomHash(10);
         
         // Create or update the link using upsert
-        const link = await prisma.link.upsert({
+        await prisma.link.upsert({
           where: {
             userId: userId,
           },
@@ -68,9 +68,10 @@ export async function POST(req: NextRequest) {
           message: "Link created or updated successfully",
           link: `/share/${hash}`,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         return NextResponse.json(
-          { error: error.message },
+          { error: errorMessage },
           { status: 500 }
         );
       }
@@ -86,22 +87,24 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ 
           message: "Link removed successfully" 
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Handle case where link doesn't exist
-        if (error.code === 'P2025') {
+        if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
           return NextResponse.json({ 
             message: "No link found to remove" 
           });
         }
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         return NextResponse.json(
-          { error: error.message },
+          { error: errorMessage },
           { status: 500 }
         );
       }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage },
       { status: 500 }
     );
   }
