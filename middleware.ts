@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 export async function middleware(request: NextRequest) {
   // Define protected routes
   const protectedRoutes = ["/dashboard", "/profile"];
-  const authRoutes = ["/signin", "/signup"];
+  const authRoutes = ["/login", "/signup"];
   
   const { pathname } = request.nextUrl;
   
@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 
     // If user is not authenticated and trying to access protected routes, redirect to signin
     if (!session && protectedRoutes.some(route => pathname.startsWith(route))) {
-      return NextResponse.redirect(new URL("/signin", request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     return NextResponse.next();

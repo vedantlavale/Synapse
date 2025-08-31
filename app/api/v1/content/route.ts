@@ -124,17 +124,31 @@ export async function DELETE(req: NextRequest) {
 
     const userId = session.user.id;
 
-    // Get content ID from request
-    //@ts-ignore
-    const { id } = req.query;
+    // Get content ID from URL search params
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Content ID is required" },
+        { status: 400 }
+      );
+    }
 
     // Delete content for the user
-    await prisma.content.deleteMany({
+    const deletedContent = await prisma.content.deleteMany({
       where: {
         id: id,
         userId: userId,
       },
     });
+
+    if (deletedContent.count === 0) {
+      return NextResponse.json(
+        { error: "Content not found or you don't have permission to delete it" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ message: "Content Deleted" });
   } catch (error) {
