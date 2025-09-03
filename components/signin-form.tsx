@@ -61,7 +61,6 @@ export default function SignInForm() {
       
       if (result.data) {
         toast.success("Sign in successful! Redirecting...");
-        // Use Next.js router instead of window.location
         router.push("/dashboard");
       }
     } catch (err: unknown) {
