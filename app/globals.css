@@ -1,13 +1,8 @@
-/* Import Tagesschrift font from a custom source */
+/* Import Tagesschrift font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
+
+/* Import Fredoka font as fallback */
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
-@font-face {
-  font-family: 'Tagesschrift';
-  src: url('/fonts/Tagesschrift-Regular.woff2') format('woff2'),
-       url('/fonts/Tagesschrift-Regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -16,7 +11,7 @@
 
 /* Tagesschrift font specifically for Synapse branding */
 .font-synapse {
-  font-family: 'Tagesschrift', 'Fredoka', var(--font-geist-sans), serif;
+  font-family: 'Tagesschrift', 'Fredoka', serif;
 }
 
 /* Neobrutalism Global Styles */

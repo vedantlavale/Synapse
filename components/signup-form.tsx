@@ -2,18 +2,63 @@
 
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function SignUpForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  const validateForm = () => {
+    console.log("Validating signup form...", { name, email, password, passwordLength: password.length });
+    
+    if (!name.trim()) {
+      toast.error("Name is required");
+      return false;
+    }
+    
+    if (name.trim().length < 2) {
+      toast.error("Name must be at least 2 characters long");
+      return false;
+    }
+    
+    if (!email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+    
+    if (!email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return false;
+    }
+    
+    if (!password) {
+      toast.error("Password is required");
+      return false;
+    }
+    
+    if (password.length < 3) {
+      toast.error("Password must be at least 3 characters long");
+      return false;
+    }
+    if (password.length > 16) {
+      toast.error("Password can be at most 16 characters long");
+      return false;
+    }
+    
+    console.log("Signup form validation passed");
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
-    setError("");
 
     try {
       await authClient.signUp.email({
@@ -21,18 +66,39 @@ export default function SignUpForm() {
         password,
         name,
       });
-      // Redirect or handle success
-      window.location.href = "/dashboard"; // or use Next.js router
+      toast.success("Account created successfully! Please check your email to verify your account before signing in.");
+      // Don't redirect immediately since email verification is required
+      // Clear the form
+      setName("");
+      setEmail("");
+      setPassword("");
+      
+      // Optionally redirect to a page that tells them to check email
+      setTimeout(() => {
+        window.location.href = "/login?message=check-email";
+      }, 2000);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Sign up failed";
-      setError(errorMessage);
+      
+      // Check for specific error types and show appropriate toast messages
+      if (errorMessage.toLowerCase().includes("email") && errorMessage.toLowerCase().includes("already")) {
+        toast.error("An account with this email already exists. Please use a different email or try signing in.");
+      } else if (errorMessage.toLowerCase().includes("password")) {
+        toast.error("Password doesn't meet requirements. Please choose a stronger password.");
+      } else if (errorMessage.toLowerCase().includes("invalid email")) {
+        toast.error("Please enter a valid email address.");
+      } else if (errorMessage.toLowerCase().includes("name")) {
+        toast.error("Please enter a valid name.");
+      } else {
+        toast.error(errorMessage || "Sign up failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto" noValidate>
       <div>
         <label htmlFor="name" className="block text-sm font-medium">
           Name
@@ -55,7 +121,6 @@ export default function SignUpForm() {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
         />
       </div>
@@ -69,14 +134,9 @@ export default function SignUpForm() {
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
         />
       </div>
-
-      {error && (
-        <div className="text-red-600 text-sm">{error}</div>
-      )}
 
       <button
         type="submit"

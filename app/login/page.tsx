@@ -3,18 +3,51 @@
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const router = useRouter();
+
+    const validateForm = () => {
+    if (!email.trim()) {
+      toast("Please enter your email address.");
+      return false;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      toast("Please enter a valid email address.");
+      return false;
+    }
+
+    if (!password) {
+      toast("Please enter your password.");
+      return false;
+    }
+
+    if (password.length < 3) {
+      toast("Password must be at least 3 characters long.");
+      return false;
+    }
+
+    if (password.length > 16) {
+      toast("Password must be no more than 16 characters long.");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsLoading(true);
-    setError('');
 
     try {
       const result = await authClient.signIn.email({
@@ -22,12 +55,17 @@ export default function LoginPage() {
         password,
       });
 
+      // Check if authentication was successful
       if (result.data) {
+        toast.success("Sign in successful! Redirecting to dashboard...");
         router.push('/dashboard');
+      } else if (result.error) {
+        toast("Invalid email or password. Please check your credentials and try again.");
+      } else {
+        toast("Invalid email or password. Please check your credentials and try again.");
       }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed';
-      setError(errorMessage);
+    } catch {
+      toast("Invalid email or password. Please check your credentials and try again.");
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +95,7 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <div className="bg-[#4ECDC4] border-4 sm:border-6 md:border-8 border-black shadow-[6px_6px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] p-4 sm:p-6 md:p-8 transform rotate-1">
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" noValidate>
             {/* Email Input */}
             <div>
               <label className="block text-lg sm:text-xl font-black text-black mb-2 transform -rotate-1">
@@ -69,7 +107,6 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 sm:p-4 text-lg sm:text-xl font-bold bg-[#FFE66D] border-3 sm:border-4 border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] focus:shadow-[4px_4px_0px_0px_#000] sm:focus:shadow-[6px_6px_0px_0px_#000] focus:outline-none transform -rotate-1"
                 placeholder="your@email.com"
-                required
               />
             </div>
 
@@ -84,16 +121,8 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 sm:p-4 text-lg sm:text-xl font-bold bg-[#FFE66D] border-3 sm:border-4 border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] focus:shadow-[4px_4px_0px_0px_#000] sm:focus:shadow-[6px_6px_0px_0px_#000] focus:outline-none transform rotate-1"
                 placeholder="••••••••"
-                required
               />
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-[#FF6B6B] border-3 sm:border-4 border-black p-3 sm:p-4 transform -rotate-1">
-                <p className="text-black font-bold text-center text-sm sm:text-base">{error}</p>
-              </div>
-            )}
 
             {/* Submit Button */}
             <button

@@ -1,12 +1,10 @@
 "use client"
 
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import Navbar from "@/components/navbar/navbar";
 import Sidebar from "@/components/dashboard/Sidebar";
 import ContentGrid from "@/components/dashboard/ContentGrid";
-import { authClient } from "@/lib/auth-client";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { useResponsive } from "@/hooks/use-responsive";
 
@@ -14,7 +12,6 @@ import { useResponsive } from "@/hooks/use-responsive";
 
 
 export default function Page() {
-  const router = useRouter();
   const { sidebarOpen, setSidebarOpen, isMobile } = useResponsive();
   const {
     contents,
@@ -28,15 +25,6 @@ export default function Page() {
     handleDeleteContent,
     contentCounts,
   } = useDashboard();
-
-  const logoutOnClick = () => {
-    try {
-      authClient.signOut();
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
 
   return (
     <div className="min-h-screen w-full bg-white relative">
@@ -62,7 +50,6 @@ export default function Page() {
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
         contentCounts={contentCounts}
-        onLogout={logoutOnClick}
       />
 
       {/* Main Content */}

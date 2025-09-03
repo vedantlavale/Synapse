@@ -3,19 +3,65 @@
 import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const router = useRouter();
+
+  const validateForm = () => {
+    console.log("Validating signup form...", { name, email, password, passwordLength: password.length });
+    
+    if (!name.trim()) {
+      toast("Name is required");
+      return false;
+    }
+    
+    if (name.trim().length < 2) {
+      toast("Name must be at least 2 characters long");
+      return false;
+    }
+    
+    if (!email.trim()) {
+      toast("Email is required");
+      return false;
+    }
+    
+    if (!email.includes("@")) {
+      toast("Please enter a valid email address");
+      return false;
+    }
+    
+    if (!password) {
+      toast("Password is required");
+      return false;
+    }
+    
+    if (password.length < 3) {
+      toast("Password must be at least 3 characters long");
+      return false;
+    }
+    
+    if (password.length > 16) {
+      toast("Password can be at most 16 characters long");
+      return false;
+    }
+    
+    console.log("Signup form validation passed");
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsLoading(true);
-    setError('');
 
     try {
       const result = await authClient.signUp.email({
@@ -25,11 +71,47 @@ export default function SignupPage() {
       });
 
       if (result.data) {
+        toast.success("Account created successfully! Welcome to Synapse!");
         router.push('/dashboard');
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Signup failed';
-      setError(errorMessage);
+      console.log("Signup error:", errorMessage);
+      
+      // Check for specific error types and show appropriate toast messages
+      if (errorMessage.toLowerCase().includes("email") && 
+          (errorMessage.toLowerCase().includes("already") || 
+           errorMessage.toLowerCase().includes("exists") ||
+           errorMessage.toLowerCase().includes("taken"))) {
+        toast("An account with this email already exists. Please use a different email or try signing in.");
+      } else if (errorMessage.toLowerCase().includes("password") && 
+                 (errorMessage.toLowerCase().includes("weak") || 
+                  errorMessage.toLowerCase().includes("strength") ||
+                  errorMessage.toLowerCase().includes("requirements"))) {
+        toast("Password doesn't meet requirements. Please choose a stronger password.");
+      } else if (errorMessage.toLowerCase().includes("password") && 
+                 errorMessage.toLowerCase().includes("short")) {
+        toast("Password is too short. Please choose a longer password.");
+      } else if (errorMessage.toLowerCase().includes("invalid email") || 
+                 errorMessage.toLowerCase().includes("email format")) {
+        toast("Please enter a valid email address.");
+      } else if (errorMessage.toLowerCase().includes("name") && 
+                 (errorMessage.toLowerCase().includes("required") || 
+                  errorMessage.toLowerCase().includes("invalid"))) {
+        toast("Please enter a valid name.");
+      } else if (errorMessage.toLowerCase().includes("terms") || 
+                 errorMessage.toLowerCase().includes("agreement")) {
+        toast("Please accept the terms and conditions.");
+      } else if (errorMessage.toLowerCase().includes("network") || 
+                 errorMessage.toLowerCase().includes("connection")) {
+        toast("Network error. Please check your connection and try again.");
+      } else if (errorMessage.toLowerCase().includes("rate limit") || 
+                 errorMessage.toLowerCase().includes("too many")) {
+        toast("Too many signup attempts. Please try again later.");
+      } else {
+        // Fallback for any other error
+        toast(errorMessage || "Sign up failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +144,7 @@ export default function SignupPage() {
 
         {/* Signup Form */}
         <div className="bg-[#FFE66D] border-4 sm:border-6 md:border-8 border-black shadow-[6px_6px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] p-4 sm:p-6 md:p-8 transform -rotate-1">
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" noValidate>
             {/* Name Input */}
             <div>
               <label className="block text-lg sm:text-xl font-black text-black mb-2 transform rotate-1">
@@ -88,7 +170,6 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 sm:p-4 text-lg sm:text-xl font-bold bg-[#4ECDC4] border-3 sm:border-4 border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] focus:shadow-[4px_4px_0px_0px_#000] sm:focus:shadow-[6px_6px_0px_0px_#000] focus:outline-none transform -rotate-1"
                 placeholder="your@email.com"
-                required
               />
             </div>
 
@@ -103,16 +184,8 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 sm:p-4 text-lg sm:text-xl font-bold bg-[#4ECDC4] border-3 sm:border-4 border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] focus:shadow-[4px_4px_0px_0px_#000] sm:focus:shadow-[6px_6px_0px_0px_#000] focus:outline-none transform rotate-1"
                 placeholder="••••••••"
-                required
               />
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-[#FF6B6B] border-3 sm:border-4 border-black p-3 sm:p-4 transform rotate-2">
-                <p className="text-black font-bold text-center text-sm sm:text-base">{error}</p>
-              </div>
-            )}
 
             {/* Submit Button */}
             <button

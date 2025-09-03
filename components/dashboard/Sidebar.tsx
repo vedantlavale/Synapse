@@ -2,12 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FaXTwitter } from "react-icons/fa6";
+
+
 import {
   Menu,
   Home,
   Search,
   Youtube,
-  Twitter,
   Globe,
   Github,
   LogOut,
@@ -16,6 +18,9 @@ import {
 } from "lucide-react";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { ContentCounts, FilterType } from "@/types/content";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -26,7 +31,6 @@ interface SidebarProps {
   selectedFilter: FilterType;
   setSelectedFilter: (filter: FilterType) => void;
   contentCounts: ContentCounts;
-  onLogout: () => void;
 }
 
 export default function Sidebar({
@@ -38,8 +42,19 @@ export default function Sidebar({
   selectedFilter,
   setSelectedFilter,
   contentCounts,
-  onLogout,
 }: SidebarProps) {
+  const router = useRouter();
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+      router.push("/login");
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error("Logout failed. Please try again.", {
+        description: "An error occurred while logging out.",
+      });
+    }
+  };
   return (
     <>
       {/* Mobile Backdrop */}
@@ -59,7 +74,7 @@ export default function Sidebar({
               }`
             : "relative"
         } border-r transition-all duration-300 flex flex-col h-full`}
-        style={{ backgroundColor: '#7a83ff' }}
+        style={{ backgroundColor: "#7a83ff" }}
       >
         {/* Header */}
         <div className="p-4 border-b">
@@ -76,7 +91,11 @@ export default function Sidebar({
                 <Menu className="h-4 w-4" />
               )}
             </Button>
-            {sidebarOpen && <h2 className="font-semibold text-sm sm:text-base font-synapse">Synapse</h2>}
+            {sidebarOpen && (
+              <h2 className="font-semibold text-sm sm:text-base font-synapse">
+                Synapse
+              </h2>
+            )}
           </div>
         </div>
 
@@ -103,10 +122,10 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("all")}
               className={`w-full ${
-                selectedFilter === "all" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
-              } ${
-                sidebarOpen ? "justify-between" : "justify-center"
-              }`}
+                selectedFilter === "all"
+                  ? "bg-white text-black"
+                  : "bg-gray-100 text-black hover:bg-white"
+              } ${sidebarOpen ? "justify-between" : "justify-center"}`}
             >
               <div className="flex items-center">
                 <Home className="h-4 w-4" />
@@ -122,10 +141,10 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("youtube")}
               className={`w-full ${
-                selectedFilter === "youtube" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
-              } ${
-                sidebarOpen ? "justify-between" : "justify-center"
-              }`}
+                selectedFilter === "youtube"
+                  ? "bg-white text-black"
+                  : "bg-gray-100 text-black hover:bg-white"
+              } ${sidebarOpen ? "justify-between" : "justify-center"}`}
             >
               <div className="flex items-center">
                 <Youtube className="h-4 w-4" />
@@ -141,14 +160,14 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("twitter")}
               className={`w-full ${
-                selectedFilter === "twitter" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
-              } ${
-                sidebarOpen ? "justify-between" : "justify-center"
-              }`}
+                selectedFilter === "twitter"
+                  ? "bg-white text-black"
+                  : "bg-gray-100 text-black hover:bg-white"
+              } ${sidebarOpen ? "justify-between" : "justify-center"}`}
             >
               <div className="flex items-center">
-                <Twitter className="h-4 w-4" />
-                {sidebarOpen && <span className="ml-2">Twitter</span>}
+                <FaXTwitter className="h-4 w-4" />
+                {sidebarOpen && <span className="ml-2">X</span>}
               </div>
               {sidebarOpen && (
                 <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
@@ -160,10 +179,10 @@ export default function Sidebar({
               variant="neutral"
               onClick={() => setSelectedFilter("url")}
               className={`w-full ${
-                selectedFilter === "url" ? "bg-white text-black" : "bg-gray-100 text-black hover:bg-white"
-              } ${
-                sidebarOpen ? "justify-between" : "justify-center"
-              }`}
+                selectedFilter === "url"
+                  ? "bg-white text-black"
+                  : "bg-gray-100 text-black hover:bg-white"
+              } ${sidebarOpen ? "justify-between" : "justify-center"}`}
             >
               <div className="flex items-center">
                 <Globe className="h-4 w-4" />
@@ -186,14 +205,18 @@ export default function Sidebar({
               className={`w-full bg-yellow-400 text-black hover:bg-yellow-500 ${
                 sidebarOpen ? "justify-start" : "justify-center"
               }`}
-              onClick={() => window.open('https://buymeacoffee.com/0xVedant', '_blank')}
+              onClick={() =>
+                window.open("https://buymeacoffee.com/0xVedant", "_blank")
+              }
             >
               <Coffee className="h-4 w-4" />
               {sidebarOpen && <span className="ml-2">Buy me a coffee</span>}
             </Button>
             <Button
               variant="neutral"
-              onClick={() => window.open('https://github.com/vedantlavale/Synapse', '_blank')}
+              onClick={() =>
+                window.open("https://github.com/vedantlavale/Synapse", "_blank")
+              }
               className={`w-full  bg-white text-black hover:bg-gray-100 ${
                 sidebarOpen ? "justify-start" : "justify-center"
               }`}
@@ -217,12 +240,14 @@ export default function Sidebar({
                 <div className="mx-auto w-[300px]">
                   <DrawerHeader>
                     <DrawerTitle>Are you sure you want to log out?</DrawerTitle>
-                    <DrawerDescription>You will be redirected to the login page.</DrawerDescription>
+                    <DrawerDescription>
+                      You will be redirected to the login page.
+                    </DrawerDescription>
                   </DrawerHeader>
                   <DrawerFooter className="grid grid-cols-2 gap-2">
-                    <Button 
+                    <Button
                       variant="noShadow"
-                      onClick={onLogout}
+                      onClick={handleLogout}
                       className="bg-red-600 hover:bg-red-700 text-white"
                     >
                       Logout
