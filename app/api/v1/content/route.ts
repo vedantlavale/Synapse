@@ -51,12 +51,27 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("=== POST /api/v1/content ===");
+    console.log("Headers:", Object.fromEntries(req.headers.entries()));
+    console.log("Cookies:", req.cookies.getAll());
+    console.log("Authorization header:", req.headers.get('authorization'));
+    console.log("Cookie header:", req.headers.get('cookie'));
+    
     // Get session using better-auth (equivalent to userMiddleware)
     const session = await auth.api.getSession({
       headers: req.headers,
     });
 
+    console.log("Session result:", session);
+
     if (!session) {
+      console.error("Authentication failed: No session found");
+      console.log("Available headers for debugging:", {
+        authorization: req.headers.get('authorization'),
+        cookie: req.headers.get('cookie'),
+        'x-session-token': req.headers.get('x-session-token'),
+        'x-auth-token': req.headers.get('x-auth-token'),
+      });
       return NextResponse.json(
         { error: "Not authenticated" },
         { status: 401 }

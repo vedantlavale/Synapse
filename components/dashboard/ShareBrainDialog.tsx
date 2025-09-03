@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -25,31 +26,81 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
   const [loading, setLoading] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const [copied, setCopied] = useState(false);
+  const [isShared, setIsShared] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
 
-  const handleCreateShare = async () => {
+  // Check sharing status when dialog opens
+  useEffect(() => {
+    if (open) {
+      checkSharingStatus();
+    }
+  }, [open]);
+
+  const checkSharingStatus = async () => {
+    setCheckingStatus(true);
     try {
-      setLoading(true);
+      // Try to create a share link to check if one already exists
       const response = await fetch("/api/v1/brain/share", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          
         },
+        body: JSON.stringify({ share: true }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        const fullLink = `${window.location.origin}/brain/share/${data.shareLink}`;
-        setShareLink(fullLink);
-        toast.success("Share link created successfully!");
-        onShareCreated?.();
-      } else {
-        const error = await response.json();
-        toast.error(error.error || "Failed to create share link");
+        if (data.link) {
+          const fullLink = `${window.location.origin}${data.link}`;
+          setShareLink(fullLink);
+          setIsShared(true);
+        }
       }
     } catch (error) {
-      console.error("Error creating share link:", error);
-      toast.error("Failed to create share link");
+      console.error("Error checking sharing status:", error);
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
+
+  const handleToggleShare = async (enabled: boolean) => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/v1/brain/share", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ share: enabled }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (enabled && data.link) {
+          // Share enabled - set the link
+          const fullLink = `${window.location.origin}${data.link}`;
+          setShareLink(fullLink);
+          setIsShared(true);
+          toast.success("Share link created successfully!");
+          onShareCreated?.();
+        } else if (!enabled) {
+          // Share disabled - clear the link
+          setShareLink("");
+          setIsShared(false);
+          toast.success("Share link removed successfully!");
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.error || `Failed to ${enabled ? 'create' : 'remove'} share link`);
+        // Revert the switch state on error
+        setIsShared(!enabled);
+      }
+    } catch (error) {
+      console.error(`Error ${enabled ? 'creating' : 'removing'} share link:`, error);
+      toast.error(`Failed to ${enabled ? 'create' : 'remove'} share link`);
+      // Revert the switch state on error
+      setIsShared(!enabled);
     } finally {
       setLoading(false);
     }
@@ -69,7 +120,6 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
 
   const handleClose = () => {
     setOpen(false);
-    setShareLink("");
     setCopied(false);
   };
 
@@ -87,37 +137,36 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
         <DialogHeader>
           <DialogTitle>Share Your Content</DialogTitle>
           <DialogDescription>
-            Create a public link to share your content with others. Anyone
-            with the link will be able to view your content.
+            Toggle sharing to create a public link that allows others to view your content.
           </DialogDescription>
         </DialogHeader>
 
-        {!shareLink ? (
-          <div className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              Click the button below to generate a shareable link for your
-              content.
+        <div className="space-y-4">
+          {/* Share Toggle */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="share-toggle">{isShared ? 'Disable' : 'Enable'} Public Sharing</Label>
+              <div className="text-shadow-sm text-muted-foreground">
+                {isShared ? "Your content is publicly accessible" : "Your content is private"}
+              </div>
             </div>
-            <Button
-              onClick={handleCreateShare}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Share Link...
-                </>
-              ) : (
-                <>
-                  <Share className="mr-2 h-4 w-4" />
-                  Create Share Link
-                </>
-              )}
-            </Button>
+            <Switch
+              id="share-toggle"
+              checked={isShared}
+              onCheckedChange={handleToggleShare}
+              disabled={loading || checkingStatus}
+            />
           </div>
-        ) : (
-          <div className="space-y-4">
+
+          {/* Loading indicator while checking status */}
+          {checkingStatus && (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          )}
+
+          {/* Share Link Section */}
+          {isShared && shareLink && !checkingStatus && (
             <div className="space-y-2">
               <Label htmlFor="share-link">Share Link</Label>
               <div className="flex space-x-2">
@@ -127,7 +176,12 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
                   readOnly
                   className="flex-1"
                 />
-                <Button size="sm" onClick={handleCopyLink} className="shrink-0">
+                <Button 
+                  size="sm" 
+                  onClick={handleCopyLink} 
+                  className="shrink-0"
+                  disabled={loading}
+                >
                   {copied ? (
                     <Check className="h-4 w-4" />
                   ) : (
@@ -135,16 +189,28 @@ export default function ShareBrainDialog({ onShareCreated }: ShareBrainDialogPro
                   )}
                 </Button>
               </div>
+              <div className="text-sm text-muted-foreground">
+                Anyone with this link can view your content. Keep it safe!
+              </div>
             </div>
-            <div className="text-sm text-muted-foreground">
-              This link allows anyone to view your content. Keep it safe!
+          )}
+
+          {/* Loading indicator for toggle actions */}
+          {loading && (
+            <div className="flex items-center justify-center py-2">
+              <div className="flex items-center space-x-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm text-muted-foreground">
+                  {isShared ? "Removing share link..." : "Creating share link..."}
+                </span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         <DialogFooter>
           <Button variant="neutral" onClick={handleClose}>
-            {shareLink ? "Close" : "Cancel"}
+            Close
           </Button>
         </DialogFooter>
       </DialogContent>

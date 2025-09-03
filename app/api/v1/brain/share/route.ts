@@ -27,7 +27,23 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = session.user.id;
-    const body = await req.json();
+    
+    // Add content type check and handle empty body
+    let body;
+    try {
+      const text = await req.text();
+      if (!text) {
+        body = {}; // Default to empty object if no body
+      } else {
+        body = JSON.parse(text);
+      }
+    } catch (parseError) {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
+
     const { share } = body;
 
     if (share) {
@@ -41,7 +57,7 @@ export async function POST(req: NextRequest) {
       if (existingLink) {
         return NextResponse.json({
           message: "Link already exists",
-          link: `/share/${existingLink.hash}`,
+          link: `/brain/share/${existingLink.hash}`,
         });
       }
 
@@ -64,7 +80,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
           message: "Link created or updated successfully",
-          link: `/share/${hash}`,
+          link: `/brain/share/${hash}`,
         });
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
