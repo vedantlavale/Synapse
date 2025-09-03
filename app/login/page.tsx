@@ -10,6 +10,35 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  
+  const handlelogin = async()=>{
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      // Check if authentication was successful
+      if (result.data) {
+        toast.success("Sign in successful! Redirecting to dashboard...");
+        router.push('/dashboard');
+      } else if (result.error) {
+        toast("Invalid email or password. Please check your credentials and try again.");
+      } else {
+        toast("Invalid email or password. Please check your credentials and try again.");
+      }
+    } catch {
+      toast("Invalid email or password. Please check your credentials and try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
     const validateForm = () => {
     if (!email.trim()) {
@@ -128,6 +157,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
+              onClick={handlelogin}
               className="w-full bg-[#95E1D3] hover:bg-[#7DD3C0] border-4 sm:border-6 border-black p-3 sm:p-4 text-lg sm:text-xl md:text-2xl font-black text-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] sm:hover:shadow-[8px_8px_0px_0px_#000] transform hover:-translate-x-1 hover:-translate-y-1 transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'SIGNING IN...' : 'SIGN IN'}

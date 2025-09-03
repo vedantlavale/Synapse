@@ -25,7 +25,7 @@ export const auth = betterAuth({
     provider: "postgresql"
   }),
   secret: process.env.BETTER_AUTH_SECRET ?? process.env.AUTH_SECRET ?? "fallback-secret-for-build",
-  baseURL: process.env.BETTER_AUTH_URL || (process.env.NODE_ENV === 'production' ? "https://synapse-sage.vercel.app" : "http://localhost:3000"),
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || (process.env.NODE_ENV === 'production' ? "https://synapse-sage.vercel.app" : "http://localhost:3000"),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -39,7 +39,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
     "https://synapse-sage.vercel.app",
-    ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
+    ...(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ? [process.env.NEXT_PUBLIC_BETTER_AUTH_URL] : []),
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
   ],
 });
