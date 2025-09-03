@@ -46,7 +46,15 @@ export default function Sidebar({
   const router = useRouter();
   const handleLogout = async () => {
     try {
-      await authClient.signOut();
+      console.log('Attempting logout...');
+      const result = await authClient.signOut({
+        fetchOptions: {
+          onError: (ctx) => {
+            console.error('Logout fetch error:', ctx);
+          }
+        }
+      });
+      console.log('Logout result:', result);
       router.push("/login");
     } catch (error) {
       console.error('Logout failed:', error);
