@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
@@ -8,6 +9,7 @@ export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const validateForm = () => {
     console.log("Validating form...", { email, password, passwordLength: password.length });
@@ -50,13 +52,18 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      await authClient.signIn.email({
+      console.log("Attempting sign in...");
+      const result = await authClient.signIn.email({
         email,
         password,
       });
-      toast.success("Sign in successful! Redirecting...");
-      // Redirect or handle success
-      window.location.href = "/dashboard"; // or use Next.js router
+      console.log("Sign in result:", result);
+      
+      if (result.data) {
+        toast.success("Sign in successful! Redirecting...");
+        // Use Next.js router instead of window.location
+        router.push("/dashboard");
+      }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Sign in failed";
       
