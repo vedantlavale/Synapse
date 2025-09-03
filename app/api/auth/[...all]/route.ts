@@ -7,9 +7,10 @@ const handler = toNextJsHandler(auth);
 export async function POST(request: Request) {
   try {
     return await handler.POST(request);
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If it's a sign-out request and session retrieval fails, treat as success
     if (request.url.includes('/sign-out') && 
+        error instanceof Error &&
         (error.message?.includes('FAILED_TO_GET_SESSION') || 
          error.message?.includes('Failed to get session'))) {
       
