@@ -37,7 +37,7 @@ export default function SharedBrainPage() {
         if (response.ok) {
           const data = await response.json();
           setContents(data.content || []);
-          setBrainOwner(data.user?.name || "Unknown User");
+          setBrainOwner(data.username || "Unknown User");
         } else if (response.status === 404) {
           setError("This shared brain could not be found or has been removed.");
         } else {
