@@ -6,6 +6,27 @@ import EmailVerification from "@/components/emails/Verifyemails";
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// Get the base URL for better-auth configuration
+function getBaseURL() {
+  // If we have the environment variable, use it
+  if (process.env.NEXT_PUBLIC_BETTER_AUTH_URL) {
+    return process.env.NEXT_PUBLIC_BETTER_AUTH_URL;
+  }
+  
+  // If we're on Vercel, use the Vercel URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  // If we're in production, use the production URL
+  if (process.env.NODE_ENV === 'production') {
+    return "https://synapse-sage.vercel.app";
+  }
+  
+  // Development fallback
+  return "http://localhost:3000";
+}
+
 export const auth = betterAuth({
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
@@ -25,9 +46,7 @@ export const auth = betterAuth({
     provider: "postgresql"
   }),
   secret: process.env.BETTER_AUTH_SECRET ?? process.env.AUTH_SECRET ?? "fallback-secret-for-build",
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || 
-           (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
-            (process.env.NODE_ENV === 'production' ? "https://synapse-sage.vercel.app" : "http://localhost:3000")),
+  baseURL: getBaseURL(),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

@@ -47,6 +47,12 @@ export default function Sidebar({
   const handleLogout = async () => {
     try {
       console.log('Attempting logout...');
+      interface AuthClientWithOptions {
+        options?: {
+          baseURL?: string;
+        };
+      }
+      console.log('Auth client baseURL:', (authClient as AuthClientWithOptions).options?.baseURL);
       const result = await authClient.signOut({
         fetchOptions: {
           onError: (ctx) => {
@@ -55,12 +61,30 @@ export default function Sidebar({
         }
       });
       console.log('Logout result:', result);
+      
+      // Clear any local storage or session data
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+      
       router.push("/login");
     } catch (error) {
       console.error('Logout failed:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      
+      // Even if logout fails, clear local data and redirect
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+      
       toast.error("Logout failed. Please try again.", {
         description: "An error occurred while logging out.",
       });
+      
+      // Still redirect to login page
+      router.push("/login");
     }
   };
   return (

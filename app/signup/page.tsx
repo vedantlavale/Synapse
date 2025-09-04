@@ -5,6 +5,42 @@ import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
+// Helper function to check if error is a 422 (existing user) error
+function isExistingUserError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  
+  // Check various possible error structures
+  interface ErrorWithStatus {
+    status?: number;
+    statusCode?: number;
+    response?: {
+      status?: number;
+      statusCode?: number;
+    };
+    message?: string;
+  }
+  const errorObj = err as ErrorWithStatus;
+  
+  // Direct status check
+  if (errorObj.status === 422) return true;
+  if (errorObj.statusCode === 422) return true;
+  
+  // Check response object
+  if (errorObj.response?.status === 422) return true;
+  if (errorObj.response?.statusCode === 422) return true;
+  
+  // Check error message
+  if (errorObj.message && typeof errorObj.message === 'string') {
+    const message = errorObj.message.toLowerCase();
+    return message.includes('422') || 
+           (message.includes('email') && message.includes('already')) ||
+           (message.includes('email') && message.includes('exists')) ||
+           (message.includes('email') && message.includes('taken'));
+  }
+  
+  return false;
+}
+
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,37 +52,37 @@ export default function SignupPage() {
     console.log("Validating signup form...", { name, email, password, passwordLength: password.length });
     
     if (!name.trim()) {
-      toast("Name is required");
+      toast.error("Name is required");
       return false;
     }
     
     if (name.trim().length < 2) {
-      toast("Name must be at least 2 characters long");
+      toast.error("Name must be at least 2 characters long");
       return false;
     }
     
     if (!email.trim()) {
-      toast("Email is required");
+      toast.error("Email is required");
       return false;
     }
     
     if (!email.includes("@")) {
-      toast("Please enter a valid email address");
+      toast.error("Please enter a valid email address");
       return false;
     }
     
     if (!password) {
-      toast("Password is required");
+      toast.error("Password is required");
       return false;
     }
     
     if (password.length < 3) {
-      toast("Password must be at least 3 characters long");
+      toast.error("Password must be at least 3 characters long");
       return false;
     }
     
     if (password.length > 16) {
-      toast("Password can be at most 16 characters long");
+      toast.error("Password can be at most 16 characters long");
       return false;
     }
     
@@ -75,42 +111,52 @@ export default function SignupPage() {
         router.push('/dashboard');
       }
     } catch (err: unknown) {
+      console.log("Signup error:", err);
+      
+      // Check if it's an existing user error (422)
+      if (isExistingUserError(err)) {
+        toast.error("An account with this email already exists. Please use a different email or try signing in.");
+        return;
+      }
+      
       const errorMessage = err instanceof Error ? err.message : 'Signup failed';
-      console.log("Signup error:", errorMessage);
+      console.log("Signup error message:", errorMessage);
       
       // Check for specific error types and show appropriate toast messages
       if (errorMessage.toLowerCase().includes("email") && 
           (errorMessage.toLowerCase().includes("already") || 
            errorMessage.toLowerCase().includes("exists") ||
-           errorMessage.toLowerCase().includes("taken"))) {
-        toast("An account with this email already exists. Please use a different email or try signing in.");
+           errorMessage.toLowerCase().includes("taken") ||
+           errorMessage.toLowerCase().includes("duplicate") ||
+           errorMessage.toLowerCase().includes("422"))) {
+        toast.error("An account with this email already exists. Please use a different email or try signing in.");
       } else if (errorMessage.toLowerCase().includes("password") && 
                  (errorMessage.toLowerCase().includes("weak") || 
                   errorMessage.toLowerCase().includes("strength") ||
                   errorMessage.toLowerCase().includes("requirements"))) {
-        toast("Password doesn't meet requirements. Please choose a stronger password.");
+        toast.error("Password doesn't meet requirements. Please choose a stronger password.");
       } else if (errorMessage.toLowerCase().includes("password") && 
                  errorMessage.toLowerCase().includes("short")) {
-        toast("Password is too short. Please choose a longer password.");
+        toast.error("Password is too short. Please choose a longer password.");
       } else if (errorMessage.toLowerCase().includes("invalid email") || 
                  errorMessage.toLowerCase().includes("email format")) {
-        toast("Please enter a valid email address.");
+        toast.error("Please enter a valid email address.");
       } else if (errorMessage.toLowerCase().includes("name") && 
                  (errorMessage.toLowerCase().includes("required") || 
                   errorMessage.toLowerCase().includes("invalid"))) {
-        toast("Please enter a valid name.");
+        toast.error("Please enter a valid name.");
       } else if (errorMessage.toLowerCase().includes("terms") || 
                  errorMessage.toLowerCase().includes("agreement")) {
-        toast("Please accept the terms and conditions.");
+        toast.error("Please accept the terms and conditions.");
       } else if (errorMessage.toLowerCase().includes("network") || 
                  errorMessage.toLowerCase().includes("connection")) {
-        toast("Network error. Please check your connection and try again.");
+        toast.error("Network error. Please check your connection and try again.");
       } else if (errorMessage.toLowerCase().includes("rate limit") || 
                  errorMessage.toLowerCase().includes("too many")) {
-        toast("Too many signup attempts. Please try again later.");
+        toast.error("Too many signup attempts. Please try again later.");
       } else {
         // Fallback for any other error
-        toast(errorMessage || "Sign up failed. Please try again.");
+        toast.error(errorMessage || "Sign up failed. Please try again.");
       }
     } finally {
       setIsLoading(false);

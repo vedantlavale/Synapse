@@ -33,7 +33,7 @@ const EmailVerification = ({ userEmailVerificationLink }: VerifyEmailProps) => {
               </Text>
 
               <Text className="text-[16px] text-gray-700 mb-[32px] leading-[24px]">
-                Thanks for signing up! To complete your registration and start
+                Thanks for joining Synapse! To complete your registration and start
                 using your account, please verify your email address by clicking
                 the button below.
               </Text>
