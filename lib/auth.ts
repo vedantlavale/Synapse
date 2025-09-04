@@ -43,8 +43,8 @@ export const auth = betterAuth({
         },
         sendOnSignUp: true,
         // Add callback URL configuration
-        autoSignInAfterVerification: false, // Don't auto sign in
-        callbackURL: "/verify-email", // Redirect to our verification page
+        autoSignInAfterVerification: true, // Auto sign in after verification
+        callbackURL: "/dashboard", // Redirect to dashboard after verification
     },
   database: prismaAdapter(prisma, {
     provider: "postgresql"
