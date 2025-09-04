@@ -8,7 +8,18 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Get the base URL for better-auth configuration
 function getBaseURL() {
-  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  // If we're in production, use the production URL from the environment variable
+  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_BETTER_AUTH_URL) {
+    return process.env.NEXT_PUBLIC_BETTER_AUTH_URL;
+  }
+  
+  // If we're on Vercel, try to use the Vercel URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  // Development fallback
+  return "http://localhost:3000";
 }
 
 export const auth = betterAuth({
