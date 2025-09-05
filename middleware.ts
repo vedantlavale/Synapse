@@ -8,8 +8,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // Check for Better Auth session cookie directly
-  const sessionToken = request.cookies.get("better-auth.session_token");
+  const sessionToken =
+    request.cookies.get("better-auth.session_token") ||
+    request.cookies.get("__Secure-better-auth.session_token");
   const token = sessionToken?.value;
 
   if (process.env.NODE_ENV === 'production') {
