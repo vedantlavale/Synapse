@@ -8,21 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Get the base URL for better-auth configuration
 function getBaseURL() {
-  if (process.env.NEXT_PUBLIC_BETTER_AUTH_URL) {
-    return process.env.NEXT_PUBLIC_BETTER_AUTH_URL;
-  }
-  
-  if (process.env.BETTER_AUTH_URL) {
-    return process.env.BETTER_AUTH_URL;
-  }
-  
-  // If we're on Vercel, try to use the Vercel URL
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  
-  // Development fallback
-  return "http://localhost:3000";
+  return process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000";
 }
 
 export const auth = betterAuth({
@@ -35,13 +21,6 @@ export const auth = betterAuth({
             path: "/",
         },
     },
-    advanced: {
-        crossSubDomainCookies: {
-            enabled: true,
-            domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
-        },
-        defaultRedirectURL: "/dashboard",
-    },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
             await resend.emails.send({
@@ -52,14 +31,13 @@ export const auth = betterAuth({
             });
         },
         sendOnSignUp: true,
-        // Add callback URL configuration
-        autoSignInAfterVerification: true, // Auto sign in after verification
-        callbackURL: "/dashboard", // Redirect to dashboard after verification
+        autoSignInAfterVerification: true,
+        callbackURL: "/dashboard",
     },
   database: prismaAdapter(prisma, {
     provider: "postgresql"
   }),
-  secret: process.env.BETTER_AUTH_SECRET ?? process.env.AUTH_SECRET ?? "fallback-secret-for-build",
+  secret: process.env.BETTER_AUTH_SECRET ?? "fallback-secret-for-build",
   baseURL: getBaseURL(),
   emailAndPassword: {
     enabled: true,
@@ -73,8 +51,6 @@ export const auth = betterAuth({
   },
   trustedOrigins: [
     "http://localhost:3000",
-    "https://synapse-sage.vercel.app",
-    "https://www.synapse-sage.vercel.app",
-    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ? [process.env.NEXT_PUBLIC_BETTER_AUTH_URL] : []),
   ],
 });
