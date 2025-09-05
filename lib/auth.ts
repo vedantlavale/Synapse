@@ -33,6 +33,7 @@ export const auth = betterAuth({
             sameSite: "lax",
             secure: process.env.NODE_ENV === "production",
             path: "/",
+            domain: process.env.NODE_ENV === "production" ? ".synapse-sage.vercel.app" : "localhost",
         },
     },
     advanced: {
@@ -74,7 +75,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
     "https://synapse-sage.vercel.app",
-    "https://synapse-sage.vercel.app/",
+    "https://www.synapse-sage.vercel.app",
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
   ],
 });
