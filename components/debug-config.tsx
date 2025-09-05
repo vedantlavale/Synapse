@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react";
 
+interface DebugConfigData {
+  environment: string;
+  baseURL: string | undefined;
+  currentOrigin: string;
+  userAgent: string;
+  cookies: string;
+}
+
 export default function DebugConfig() {
-  const [config, setConfig] = useState<any>(null);
+  const [config, setConfig] = useState<DebugConfigData | null>(null);
 
   useEffect(() => {
     // Only show debug info in development or if explicitly enabled
