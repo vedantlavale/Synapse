@@ -13,11 +13,15 @@ export async function middleware(request: NextRequest) {
   const token = sessionToken?.value;
 
   if (process.env.NODE_ENV === 'production') {
-    console.log('Cookie check:', {
+    console.log('Auth Middleware:', {
       path: pathname,
       hasToken: !!token,
-      cookieValue: sessionToken?.value,
-      allCookies: request.cookies.getAll()
+      cookieHeaders: request.headers.get('cookie'),
+      tokenValue: token ? token.substring(0, 10) + '...' : null,
+      host: request.headers.get('host'),
+      origin: request.headers.get('origin'),
+      referer: request.headers.get('referer'),
+      url: request.url
     });
   }
   

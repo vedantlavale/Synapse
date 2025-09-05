@@ -19,6 +19,7 @@ export const auth = betterAuth({
             sameSite: "lax",
             secure: process.env.NODE_ENV === "production",
             path: "/",
+            domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined,
         },
     },
     emailVerification: {
@@ -51,6 +52,7 @@ export const auth = betterAuth({
   },
   trustedOrigins: [
     "http://localhost:3000",
+    "https://brainly.vedant.works",
     ...(process.env.NEXT_PUBLIC_BETTER_AUTH_URL ? [process.env.NEXT_PUBLIC_BETTER_AUTH_URL] : []),
   ],
 });
