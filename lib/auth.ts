@@ -8,9 +8,14 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Get the base URL for better-auth configuration
 function getBaseURL() {
-  // If we're in production, use the production URL from the environment variable
-  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_BETTER_AUTH_URL) {
+  // If we have the environment variable, use it (prioritize NEXT_PUBLIC_BETTER_AUTH_URL)
+  if (process.env.NEXT_PUBLIC_BETTER_AUTH_URL) {
     return process.env.NEXT_PUBLIC_BETTER_AUTH_URL;
+  }
+  
+  // Fallback to BETTER_AUTH_URL if available
+  if (process.env.BETTER_AUTH_URL) {
+    return process.env.BETTER_AUTH_URL;
   }
   
   // If we're on Vercel, try to use the Vercel URL
@@ -24,7 +29,7 @@ function getBaseURL() {
 
 export const auth = betterAuth({
     cookies: {
-        cookieName: "auth.session_token",
+        cookieName: "better-auth.session_token",
         cookieOptions: {
             httpOnly: true,
             sameSite: "lax",

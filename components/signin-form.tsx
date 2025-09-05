@@ -52,19 +52,36 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      console.log("Attempting sign in...");
+      console.log("Attempting sign in...", {
+        email,
+        baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+        environment: process.env.NODE_ENV
+      });
+      
       const result = await authClient.signIn.email({
         email,
         password,
       });
+      
       console.log("Sign in result:", result);
       
       if (result.data) {
         toast.success("Sign in successful! Redirecting...");
         router.push("/dashboard");
+      } else {
+        console.error("Sign in failed - no data in result:", result);
+        toast.error("Sign in failed. Please check your credentials and try again.");
       }
     } catch (err: unknown) {
+      console.error("Sign in error:", err);
       const errorMessage = err instanceof Error ? err.message : "Sign in failed";
+      
+      // Enhanced error logging for debugging
+      console.error("Error details:", {
+        message: errorMessage,
+        stack: err instanceof Error ? err.stack : undefined,
+        name: err instanceof Error ? err.name : undefined
+      });
       
       // Check for specific error types and show appropriate toast messages
       if (errorMessage.toLowerCase().includes("email") && errorMessage.toLowerCase().includes("verif")) {
@@ -79,6 +96,8 @@ export default function SignInForm() {
         toast.error("Invalid email or password. Please check and try again.");
       } else if (errorMessage.toLowerCase().includes("too many")) {
         toast.error("Too many login attempts. Please try again later.");
+      } else if (errorMessage.toLowerCase().includes("network") || errorMessage.toLowerCase().includes("fetch")) {
+        toast.error("Network error. Please check your connection and try again.");
       } else {
         toast.error(errorMessage || "Sign in failed. Please try again.");
       }

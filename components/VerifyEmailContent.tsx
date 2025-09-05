@@ -19,7 +19,6 @@ export default function VerifyEmailContent() {
       setStatus('success');
       setMessage('Email verified successfully! You can now sign in.');
 
-      // Redirect to login page after 3 seconds
       setTimeout(() => {
         router.push('/login');
       }, 3000);

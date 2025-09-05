@@ -9,6 +9,8 @@ import {
   Button,
   Hr,
   Tailwind,
+
+  
 } from "@react-email/components";
 
 interface VerifyEmailProps {

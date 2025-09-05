@@ -6,8 +6,16 @@ const handler = toNextJsHandler(auth);
 // Wrap the POST handler to handle sign-out session errors gracefully
 export async function POST(request: Request) {
   try {
+    console.log("Auth API POST request:", {
+      url: request.url,
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries())
+    });
+    
     return await handler.POST(request);
   } catch (error: unknown) {
+    console.error("Auth API POST error:", error);
+    
     // If it's a sign-out request and session retrieval fails, treat as success
     if (request.url.includes('/sign-out') && 
         error instanceof Error &&
@@ -27,6 +35,12 @@ export async function POST(request: Request) {
       });
       return response;
     }
+    console.error("Auth API error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      url: request.url
+    });
+    
     throw error;
   }
 }

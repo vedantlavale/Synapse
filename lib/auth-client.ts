@@ -13,6 +13,10 @@ function getBaseURL() {
     if (window.location.origin.includes('vercel.app')) {
       return "https://synapse-sage.vercel.app";
     }
+    // For production environments, use the current origin
+    if (process.env.NODE_ENV === 'production') {
+      return window.location.origin;
+    }
     // Otherwise use the current origin
     return window.location.origin;
   }
