@@ -9,15 +9,25 @@ export async function middleware(request: NextRequest) {
   }
   
   // Check for Better Auth session cookie directly
-  const sessionToken = request.cookies.get("better-auth.session_token") || 
-                      request.cookies.get("session_token") ||
-                      request.cookies.get("auth.session_token");
+  const sessionToken = request.cookies.get("better-auth.session_token");
+  const token = sessionToken?.value;
+
+  if (process.env.NODE_ENV === 'production') {
+    console.log('Cookie check:', {
+      path: pathname,
+      hasToken: !!token,
+      cookieValue: sessionToken?.value,
+      allCookies: request.cookies.getAll()
+    });
+  }
   
-  if (sessionToken && ["/login", "/signup"].includes(pathname)) {
+  if (token && ["/login", "/signup"].includes(pathname)) {
+    console.log('Redirecting authenticated user to dashboard');
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
   
-  if (!sessionToken && (pathname === "/dashboard" || pathname.startsWith("/dashboard/"))) {
+  if (!token && (pathname === "/dashboard" || pathname.startsWith("/dashboard/"))) {
+    console.log('Redirecting unauthenticated user to login');
     return NextResponse.redirect(new URL("/login", request.url));
   }
   

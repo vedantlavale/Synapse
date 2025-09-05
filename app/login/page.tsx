@@ -58,6 +58,8 @@ export default function LoginPage() {
         environment: process.env.NODE_ENV
       });
       
+      console.log('Starting authentication...', { email });
+      
       const result = await authClient.signIn.email({
         email,
         password,
@@ -70,11 +72,15 @@ export default function LoginPage() {
       if (result.data && result.data.token) {
         console.log("Authentication successful with token:", result.data.token);
         toast.success("Sign in successful! Redirecting to dashboard...");
-        window.location.href = '/dashboard';
-      } else if (result.data) {
-        console.log("Authentication successful but no token in data:", result.data);
-        toast.success("Sign in successful! Redirecting to dashboard...");
-        window.location.href = '/dashboard';
+        await new Promise(resolve => setTimeout(resolve, 500));
+        router.push('/dashboard');
+      
+        setTimeout(() => {
+          if (window.location.pathname !== '/dashboard') {
+            console.log('Fallback redirect...');
+            window.location.href = '/dashboard';
+          }
+        }, 1000);
       } else {
         console.error("Sign in failed - no data in result:", result);
         toast.error("Sign in failed. Please check your credentials and try again.");
