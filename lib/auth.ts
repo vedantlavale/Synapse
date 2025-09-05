@@ -33,7 +33,6 @@ export const auth = betterAuth({
             sameSite: "lax",
             secure: process.env.NODE_ENV === "production",
             path: "/",
-            domain: process.env.NODE_ENV === "production" ? ".synapse-sage.vercel.app" : "localhost",
         },
     },
     advanced: {
