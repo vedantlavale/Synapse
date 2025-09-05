@@ -8,12 +8,10 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Get the base URL for better-auth configuration
 function getBaseURL() {
-  // If we have the environment variable, use it (prioritize NEXT_PUBLIC_BETTER_AUTH_URL)
   if (process.env.NEXT_PUBLIC_BETTER_AUTH_URL) {
     return process.env.NEXT_PUBLIC_BETTER_AUTH_URL;
   }
   
-  // Fallback to BETTER_AUTH_URL if available
   if (process.env.BETTER_AUTH_URL) {
     return process.env.BETTER_AUTH_URL;
   }
@@ -36,6 +34,13 @@ export const auth = betterAuth({
             secure: process.env.NODE_ENV === "production",
             path: "/",
         },
+    },
+    advanced: {
+        crossSubDomainCookies: {
+            enabled: true,
+            domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
+        },
+        defaultRedirectURL: "/dashboard",
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
@@ -60,7 +65,7 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     minPasswordLength: 3,
-    maxPasswordLength: 16, 
+    maxPasswordLength: 16,
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days

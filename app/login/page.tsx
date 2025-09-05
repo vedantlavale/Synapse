@@ -61,14 +61,20 @@ export default function LoginPage() {
       const result = await authClient.signIn.email({
         email,
         password,
+        callbackURL: "/dashboard",
       });
       
       console.log("Sign in result:", result);
 
       // Check if authentication was successful
-      if (result.data) {
+      if (result.data && result.data.token) {
+        console.log("Authentication successful with token:", result.data.token);
         toast.success("Sign in successful! Redirecting to dashboard...");
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
+      } else if (result.data) {
+        console.log("Authentication successful but no token in data:", result.data);
+        toast.success("Sign in successful! Redirecting to dashboard...");
+        window.location.href = '/dashboard';
       } else {
         console.error("Sign in failed - no data in result:", result);
         toast.error("Sign in failed. Please check your credentials and try again.");
